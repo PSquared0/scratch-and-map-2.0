@@ -1,0 +1,29 @@
+databases:
+  - name: scratch-and-map-db
+    plan: free
+    databaseName: scratch_map
+    user: scratch_map
+
+services:
+  - type: web
+    name: scratch-and-map-backend
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn server:app
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: scratch-and-map-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_PUBLIC_KEY
+        sync: false
+      - key: NO_DEBUG
+        value: "1"
+      - key: ALLOWED_ORIGIN
+        value: "*"

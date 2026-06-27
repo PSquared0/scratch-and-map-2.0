@@ -11,7 +11,8 @@ import stripe
 import logging
 
 app = Flask(__name__)
-CORS(app, resources=r'/api/*')
+ALLOWED_ORIGIN = os.environ.get("ALLOWED_ORIGIN", "*")
+CORS(app, resources={r'/api/*': {"origins": ALLOWED_ORIGIN}})
 
 def connect_to_db(app, db_uri):
     app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
@@ -25,6 +26,8 @@ def connect_to_db(app, db_uri):
 
 load_dotenv('.env')
 DATABASE_URL = os.environ.get("DATABASE_URL")
+if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 connect_to_db(app, DATABASE_URL)
 
 # Init db & mm
