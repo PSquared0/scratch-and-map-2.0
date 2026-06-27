@@ -27,3 +27,5 @@ services:
         value: "1"
       - key: ALLOWED_ORIGIN
         value: "*"
+      - key: PYTHON_VERSION
+        value: "3.12.8"
