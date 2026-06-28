@@ -75,14 +75,20 @@ def signup():
 @app.route('/api/login/fb/<fbid>', methods=['PUT'])
 def fbLogin(fbid):
     user = users.query.filter(users.fb_user_id == fbid).first()
-    if  request.json['fb_access_token']:
+    if user is None:
+        return jsonify({"error": "User not found"}), 404
+    if request.json['fb_access_token']:
+        user.fb_access_token = request.json['fb_access_token']
+        db.session.commit()
         return user_schema.jsonify(user)
-    else: return print ('User Name Or Password Incorrect')
+    return jsonify({"error": "User Name Or Password Incorrect"}), 401
 
 #NOT SURE IF WE NEED THIS, BECAUSE WE CAN PULL THE FB_USER_ID DATA FROM THE USERS ENDPOINT.
 @app.route('/api/users/fb/<fbid>', methods=['GET'])
 def get_user_by_fbid(fbid):
     user = users.query.filter(users.fb_user_id==fbid).first()
+    if user is None:
+        return jsonify({}), 404
 
     return user_schema.jsonify(user)
 

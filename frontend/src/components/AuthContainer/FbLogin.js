@@ -59,29 +59,25 @@ class FbLogin extends Component {
           )
           .then(res => {
             console.log("DATA I HOPE", res.data);
-            if (!res.data.fb_user_id) {
+            if (!res.data || !res.data.fb_user_id) {
               //signup second phase component here
               const url = `${import.meta.env.VITE_BACKEND_URL}/api/signup`;
-              const proxyurl = "https://cors-anywhere.herokuapp.com/";
-              axios
-                .post(url, user)
-
-                .then(res => {
-                  window.localStorage.setItem(
-                    "FbAccessToken",
-                    response.accessToken
-                  );
-                  window.localStorage.setItem("SAMUserID", response.userID);
-                  // this.props.getUserData(
-                  //   window.localStorage.getItem("SAMUserID") ***Will add back in later - BM
-                  // );
-                  return console.log(res);
-                }); //need a message when user already exist.
+              return axios.post(url, user).then(res => {
+                window.localStorage.setItem(
+                  "FbAccessToken",
+                  response.accessToken
+                );
+                window.localStorage.setItem("SAMUserID", response.userID);
+                // this.props.getUserData(
+                //   window.localStorage.getItem("SAMUserID") ***Will add back in later - BM
+                // );
+                return console.log(res);
+              }); //need a message when user already exist.
             } else {
               console.log("ELSE", res);
               let new_user = res.data;
               new_user.fb_access_token = response.accessToken;
-              axios
+              return axios
                 .put(
                   `${import.meta.env.VITE_BACKEND_URL}/api/login/fb/${
                     response.userID
@@ -101,8 +97,11 @@ class FbLogin extends Component {
                 });
             }
           })
-          .then(res => {
+          .then(() => {
             document.location.reload(true);
+          })
+          .catch(err => {
+            console.error("FB login flow failed", err);
           });
       }
     );
