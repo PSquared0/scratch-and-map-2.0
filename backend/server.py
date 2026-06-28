@@ -88,7 +88,7 @@ def fbLogin(fbid):
 def get_user_by_fbid(fbid):
     user = users.query.filter(users.fb_user_id==fbid).first()
     if user is None:
-        return jsonify({}), 404
+        return jsonify({})
 
     return user_schema.jsonify(user)
 
